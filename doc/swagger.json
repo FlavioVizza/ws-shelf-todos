@@ -1,0 +1,444 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Todos REST API",
+    "description": "Todos REST API documentation"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api", 
+      "decription": "Local Server"
+    }
+  ],
+  "paths": {
+    "/hello": {
+      "get": {
+        "tags": [ "Hello" ],
+        "description": "Return a simple hello message",
+        "parameters": [ ],
+        "responses": {
+          "200": {
+            "description": "Generate a simple message to check if the API is working",
+            "schema": {
+              "$ref": "#/components/schemas/HelloResponse"
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [ "Auth" ],
+        "requestBody": {
+          "description": "Register new user with username, email and password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Confirmed new user registration",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Error during new user registration",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [ "Auth" ],
+        "requestBody": {
+          "description": "Login with email and password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login Success",
+            "schema": {
+              "$ref": "#/components/schemas/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid username or password",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "401": {
+            "description": "Invalid password",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Unexpexted error",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [ "Auth" ],
+        "requestBody": {
+          "description": "Refresh access token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login Success",
+            "schema": {
+              "$ref": "#/components/schemas/TokenResponse"
+            }
+          },
+          "401": {
+            "description": "Invalid username or password",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "403": {
+            "description": "Invalid password",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todos": {
+      "get": {
+        "security": [ { "bearerAuth": []} ],
+        "tags": [ "Todos" ],
+        "description": "Return a list of todos",
+        "responses": {
+          "200": {
+            "description": "Return a list of todo items",
+            "schema": {
+              "$ref": "#/components/schemas/TodoList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized, Access token is required",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "403": {
+            "description": "Unauthorized, Access token is invalid or expired",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Return a generic error message",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [ { "bearerAuth": []} ],
+        "tags": [ "Todos" ],
+        "description": "Create a new todo item",
+        "requestBody": {
+          "description": "A new todo item to insert",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TodoItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Return a success message",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized, Access token is required",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "403": {
+            "description": "Unauthorized, Access token is invalid or expired",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Return a generic error message",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todos/{todoId}": {
+      "get": {
+        "security": [ { "bearerAuth": []} ],
+        "tags": [ "Todos" ],
+        "description": "Return a todo item",
+        "parameters":[{
+          "in": "path",
+          "name": "todoId",
+          "schema": { "type": "integer" },
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Return a single todo item",
+            "schema": {
+              "$ref": "#/components/schemas/TodoItem"
+            }
+          },
+          "401": {
+            "description": "Unauthorized, Access token is required",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "403": {
+            "description": "Unauthorized, Access token is invalid or expired",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "404": {
+            "description": "Todo item not found",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Error getting todo item",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [ { "bearerAuth": []} ],
+        "tags": [ "Todos" ],
+        "description": "Update a todo item",
+        "parameters":[{
+          "in": "path",
+          "name": "todoId",
+          "schema": { "type": "integer" },
+          "required": true
+        }],
+        "requestBody": {
+          "description": "Update a todo item",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TodoItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return a success message",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized, Access token is required",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "403": {
+            "description": "Unauthorized, Access token is invalid or expired",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Error updating todo item",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [ { "bearerAuth": []} ],
+        "tags": [ "Todos" ],
+        "description": "Delete a todo item",
+        "parameters":[{
+          "in": "path",
+          "name": "todoId",
+          "schema": { "type": "integer" },
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Return a success message",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized, Access token is required",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "403": {
+            "description": "Unauthorized, Access token is invalid or expired",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          },
+          "500": {
+            "description": "Error deleting todo item",
+            "schema": {
+              "$ref": "#/components/schemas/GenericResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HelloResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "GenericResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type" : "boolean" },
+          "message": { "type" : "string" }
+        }
+      }, 
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "username": { "type" : "string" },
+          "email":    { "type" : "string" },
+          "password": { "type" : "string" }
+        },
+        "example": {
+          "username": "John Doe",
+          "email": "john.doe@email.com",
+          "password": "password123"
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email":    { "type" : "string" },
+          "password": { "type" : "string" }
+        },
+        "example": {
+          "email": "john.doe@email.com",
+          "password": "password123"
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string" },
+          "refreshToken": { "type": "string" }
+        }
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": { "type" : "string" }
+        },
+        "example": {
+          "refreshToken": "REFRESH_TOKEN"
+        }
+      },
+      "TodoItemRequest": {
+        "type": "object",
+        "properties": {
+          "title":      { "type" : "string" },
+          "description":{ "type" : "string" }
+        },
+        "example": {
+          "title": "todo item title",
+          "description": "todo item description"
+        }
+      },
+      "TodoItem": {
+        "type": "object",
+        "properties": {
+          "todoId":     { "type" : "number" },
+          "title":      { "type" : "string" },
+          "description":{ "type" : "string" },
+          "completed":  { "type" : "boolean" },
+          "createAt":   { "type" : "date" }
+        },
+        "example": {
+          "todoId": 1,
+          "title": "todo item title",
+          "description": "todo item description",
+          "completed": false,
+          "createAt": "2024-04-12T08:38:33.366Z"
+        }
+      },
+      "TodoList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/TodoItem"
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT" 
+      } 
+    }    
+  }
+}

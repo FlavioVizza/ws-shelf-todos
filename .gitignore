@@ -1,0 +1,27 @@
+# Dart specific
+.dart_tool/
+.packages
+build/
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+
+# Flutter specific (se usi Flutter con Shelf)
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# Editor/IDE specific
+.idea/
+.vscode/
+*.iml
+
+# macOS specific
+.DS_Store
+
+# Log & temp files
+*.log
+*.swp
+*.swo
+*.swn
