@@ -5,6 +5,17 @@ import '../models/user_model.dart';
 import '../utils/config.dart';
 import '../utils/constants.dart';
 
+/// **Generate an access token**
+///
+/// This function generates a JWT (JSON Web Token) for the given payload. 
+/// The token is signed using the access token secret and is set to expire 
+/// based on the configured duration.
+///
+/// **Parameters**:
+/// - `payload`: A `Map<String, dynamic>` containing the data to be included 
+/// in the token's payload.
+///
+/// **Returns**: A `String` representing the signed access token.
 String _generateAccessToken(Map<String, dynamic> payload){
   final jwt = JWT(payload);
   return jwt.sign(
@@ -13,6 +24,17 @@ String _generateAccessToken(Map<String, dynamic> payload){
   );
 }
 
+/// **Generate a refresh token**
+///
+/// This function generates a JWT (JSON Web Token) for the given payload. 
+/// The token is signed using the refresh token secret and is set to expire 
+/// based on the configured duration.
+///
+/// **Parameters**:
+/// - `payload`: A `Map<String, dynamic>` containing the data to be included 
+/// in the token's payload.
+///
+/// **Returns**: A `String` representing the signed refresh token.
 String _generateRefreshToken(Map<String, dynamic> payload){
   final jwt = JWT(payload);
   return jwt.sign(
@@ -21,6 +43,16 @@ String _generateRefreshToken(Map<String, dynamic> payload){
   );
 }
 
+/// **Register a new user**
+///
+/// This function registers a new user by accepting a JSON payload containing
+/// the `username`, `email`, and `password`. The password is hashed before 
+/// saving the user data. If the registration is successful, a `201 Created` 
+/// response is returned, otherwise, a `500 Internal Server Error` response 
+/// with the error message is returned.
+///
+/// **Returns**: A `201 Created` response with a success message or a `500 Internal Server Error` 
+/// if the registration fails.
 Future<Response> register(Request request) async {
   try {
     final payload = jsonDecode(await request.readAsString());
@@ -41,9 +73,17 @@ Future<Response> register(Request request) async {
       body: jsonEncode({'success': false, 'message': e.toString()})
     );
   }
-  
 }
 
+/// **Login a user**
+///
+/// This function authenticates the user by verifying the provided `email` 
+/// and `password`. If authentication is successful, it generates an `accessToken` 
+/// and a `refreshToken`. If the credentials are invalid, it returns a `401 Unauthorized` 
+/// response.
+///
+/// **Returns**: A `200 OK` response with the access and refresh tokens if login is successful, 
+/// or a `401 Unauthorized` response if credentials are invalid.
 Future<Response> login(Request request) async {
   final payload = jsonDecode(await request.readAsString());
   final email = payload['email'];
@@ -72,6 +112,15 @@ Future<Response> login(Request request) async {
   );
 }
 
+/// **Refresh access token using a refresh token**
+///
+/// This function allows the user to refresh their access token by using a valid 
+/// refresh token. If the refresh token is expired or invalid, it returns a `500` 
+/// response with an appropriate error message. If the refresh is successful, 
+/// a new `accessToken` and `refreshToken` are generated and returned.
+///
+/// **Returns**: A `200 OK` response with new access and refresh tokens if the refresh is successful, 
+/// or a `500 Internal Server Error` response if there is an issue refreshing the token.
 Future<Response> refreshToken(Request request) async {
   
   var statusCode = 100;
